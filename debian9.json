@@ -1,0 +1,90 @@
+{
+  "variables": {
+    "cloud_token": "{{ env `ATLAS_TOKEN` }}",
+    "version_date": "{{ isotime \"20061202\" }}",
+    "version_tag": "0",
+    "compression_level": "8",
+    "cpus": "1",
+    "disk_size": "81920",
+    "headless": "true",
+    "iso_checksum_type": "sha256",
+    "iso_checksum": "e3934b8dd67f31622f8d2bdb72e91d458c05b05d59b069695274c5cb617e821c",
+    "memory": "1024",
+    "mirror": "https://cdimage.debian.org/debian-cd",
+    "ssh_timeout": "10000s"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "<esc><wait>",
+        "install <wait>",
+        " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>",
+        "debian-installer=en_GB <wait>",
+        "auto <wait>",
+        "locale=en_GB <wait>",
+        "kbd-chooser/method=gb <wait>",
+        "keyboard-configuration/xkb-keymap=us <wait>",
+        "netcfg/get_hostname={{ .Name }} <wait>",
+        "netcfg/get_domain=vagrantup.com <wait>",
+        "fb=false <wait>",
+        "debconf/frontend=noninteractive <wait>",
+        "console-setup/ask_detect=false <wait>",
+        "console-keymaps-at/keymap=us <wait>",
+        "grub-installer/bootdev=/dev/sda <wait>",
+        "<enter><wait>"
+      ],
+      "boot_wait": "5s",
+      "disk_size": "{{user `disk_size`}}",
+      "guest_os_type": "Debian_64",
+      "headless": "{{user `headless`}}",
+      "http_directory": "http",
+      "iso_urls": [
+        "iso/debian-9.5.0-amd64-xfce-CD-1.iso",
+        "{{user `mirror`}}/current/amd64/iso-cd/debian-9.5.0-amd64-xfce-CD-1.iso"
+      ],
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "{{user `ssh_timeout`}}",
+      "shutdown_command": "echo 'vagrant'|sudo -S shutdown -P now",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "vm_name": "packer-debian-9-amd64",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "{{user `memory`}}"],
+        ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "script": "scripts/puppet.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "script": "scripts/setup.sh"
+    },
+    {
+      "type": "puppet-masterless",
+      "puppet_bin_dir": "/usr/bin",
+      "manifest_file": "puppet/manifests/default.pp",
+      "module_paths": "puppet/modules",
+      "ignore_exit_codes": true
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "output": "builds/{{.Provider}}-debian9.box",
+        "type": "vagrant",
+        "compression_level": "{{user `compression_level`}}"
+      }
+    ]
+  ]
+}
