@@ -84,6 +84,11 @@
         "output": "builds/{{.Provider}}-debian9.box",
         "type": "vagrant",
         "compression_level": "{{user `compression_level`}}"
+      },
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "markolly/debian9",
+        "version": "{{user `version_date`}}.{{user `version_tag`}}"
       }
     ]
   ]
