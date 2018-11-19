@@ -8,7 +8,7 @@
     "disk_size": "81920",
     "headless": "true",
     "iso_checksum_type": "sha256",
-    "iso_checksum": "e3934b8dd67f31622f8d2bdb72e91d458c05b05d59b069695274c5cb617e821c",
+    "iso_checksum": "20ffe2dbbc7a4a8b418d3ab10e1c4903c053b5a4cc517cb0ca955df52cabce55",
     "memory": "1024",
     "mirror": "https://cdimage.debian.org/debian-cd",
     "ssh_timeout": "10000s"
@@ -40,8 +40,8 @@
       "headless": "{{user `headless`}}",
       "http_directory": "http",
       "iso_urls": [
-        "iso/debian-9.5.0-amd64-xfce-CD-1.iso",
-        "{{user `mirror`}}/current/amd64/iso-cd/debian-9.5.0-amd64-xfce-CD-1.iso"
+        "iso/debian-9.6.0-amd64-xfce-CD-1.iso",
+        "{{user `mirror`}}/current/amd64/iso-cd/debian-9.6.0-amd64-xfce-CD-1.iso"
       ],
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
